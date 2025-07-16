@@ -1,0 +1,48 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>UI DEV Kit</title>
+    <link rel="stylesheet" href="popup.css" />
+  </head>
+  <body>
+    <div class="container">
+      <div class="header">
+        <h1>UI DEV Kit</h1>
+        <p>Bundle of Web Design Tools</p>
+      </div>
+
+      <div class="tools">
+        <div class="tool-section">
+          <h3>Measurement Tool</h3>
+          <button id="measureBtn" class="tool-btn">
+            <span class="icon">📏</span>
+            <span>Measure Distance</span>
+          </button>
+          <button id="clearBtn" class="tool-btn secondary">
+            <span class="icon">🗑️</span>
+            <span>Clear All</span>
+          </button>
+        </div>
+
+        <div class="status" id="status">
+          <span class="status-text">Ready to measure</span>
+        </div>
+      </div>
+
+      <div class="instructions">
+        <h4>How to use:</h4>
+        <ol>
+          <li>Click "Measure Distance"</li>
+          <li>Click and drag on the webpage</li>
+          <li>Release to see the distance in pixels</li>
+          <li>Use "Clear All" to remove measurements</li>
+        </ol>
+      </div>
+    </div>
+
+    <script src="lib/browser-polyfill.min.js"></script>
+    <script src="popup.js"></script>
+  </body>
+</html>
