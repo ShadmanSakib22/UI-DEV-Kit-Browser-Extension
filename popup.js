@@ -157,7 +157,7 @@ class UIDevKitPopup {
         this.measureBtn.classList.remove("active");
         this.measureBtn.querySelector("span:last-child").textContent =
           "Measure Distance";
-        this.updateStatus("Ready to measure");
+        this.updateStatus("Ready");
       }
     } catch (error) {
       console.error("Error toggling measurement:", error);
@@ -173,6 +173,9 @@ class UIDevKitPopup {
       });
       await browser.tabs.sendMessage(tab.id, { action: "clearMeasurements" });
       this.updateStatus("All measurements cleared");
+      setTimeout(() => {
+        this.updateStatus("Ready");
+      }, 3500);
     } catch (error) {
       console.error("Error clearing measurements:", error);
     }
