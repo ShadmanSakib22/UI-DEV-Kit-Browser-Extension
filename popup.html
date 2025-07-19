@@ -11,6 +11,10 @@
       <div class="header">
         <h1>UI DEV Kit</h1>
         <p>Bundle of UI Design Tools</p>
+        <!--Status-->
+        <div class="status" id="status">
+          <span class="status-text">Ready</span>
+        </div>
       </div>
 
       <div class="tools">
@@ -107,10 +111,57 @@
           </div>
         </div>
         <!--Color Picker-->
-
-        <!--Status-->
-        <div class="status" id="status">
-          <span class="status-text">Ready</span>
+        <div class="tool-section">
+          <h3>Color Picker</h3>
+          <button id="pickColorBtn" class="tool-btn">
+            <span class="icon">🎨</span>
+            <span>Pick Color from Page</span>
+          </button>
+          <div class="color-picker-container">
+            <div class="color-picker-input-group">
+              <label for="pickedColorHex">HEX:</label>
+              <input
+                type="text"
+                id="pickedColorHex"
+                class="color-picker-input"
+                readonly
+              />
+              <div id="colorPreview" class="color-preview"></div>
+            </div>
+          </div>
+        </div>
+        <!--Color Converter-->
+        <div class="tool-section">
+          <h3>Color Converter</h3>
+          <div class="color-converter-container">
+            <div class="color-converter-group">
+              <label for="colorInputHex">HEX:</label>
+              <input
+                type="text"
+                id="colorInputHex"
+                class="color-converter-input"
+                placeholder="#RRGGBB"
+              />
+            </div>
+            <div class="color-converter-group">
+              <label for="colorInputRgba">RGBA:</label>
+              <input
+                type="text"
+                id="colorInputRgba"
+                class="color-converter-input"
+                placeholder="rgba(R, G, B, A)"
+              />
+            </div>
+            <div class="color-converter-group">
+              <label for="colorInputOklch">OKLCH:</label>
+              <input
+                type="text"
+                id="colorInputOklch"
+                class="color-converter-input"
+                placeholder="oklch(L C H)"
+              />
+            </div>
+          </div>
         </div>
       </div>
     </div>

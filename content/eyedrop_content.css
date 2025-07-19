@@ -1,0 +1,88 @@
+/* Styles for the color picker overlay */
+.uidevkit-color-picker-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100vw;
+  height: 100vh;
+  z-index: 1000000; /* Ensure it's above most page content */
+  cursor: crosshair; /* Visual feedback for picking */
+  display: none; /* Hidden by default */
+  background: rgba(
+    0,
+    0,
+    0,
+    0.01
+  ); /* Slightly visible to indicate active state */
+  pointer-events: auto; /* Allow interaction with the overlay */
+}
+
+/* Styles for the hover feedback box on the webpage */
+.uidevkit-hover-feedback {
+  position: fixed;
+  top: 10px;
+  right: 10px;
+  background: rgba(
+    30,
+    41,
+    59,
+    0.95
+  ); /* Slightly more opaque for better readability */
+  color: white;
+  padding: 8px 12px;
+  border-radius: 8px;
+  font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Oxygen,
+    Ubuntu, Cantarell, sans-serif;
+  font-size: 13px;
+  font-weight: 500;
+  z-index: 1000001; /* Ensure it's above the overlay */
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.4);
+  display: none; /* Hidden by default, controlled by JS */
+  pointer-events: none; /* Allows clicks to pass through to elements below */
+  min-width: 120px;
+  text-align: left;
+  transition: all 0.1s ease; /* Smooth transition for position and color changes */
+  align-items: center;
+  gap: 8px;
+  border: 1px solid rgba(255, 255, 255, 0.1);
+}
+
+.uidevkit-hover-feedback .color-swatch {
+  display: inline-block;
+  width: 20px;
+  height: 20px;
+  border: 2px solid rgba(255, 255, 255, 0.4);
+  border-radius: 4px;
+  vertical-align: middle;
+  flex-shrink: 0;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.3);
+}
+
+.uidevkit-hover-feedback .color-text {
+  font-family: "Monaco", "Menlo", "Ubuntu Mono", monospace;
+  font-size: 12px;
+  font-weight: 600;
+  letter-spacing: 0.5px;
+  text-transform: uppercase;
+}
+
+/* Animation for when the feedback box appears */
+.uidevkit-hover-feedback[style*="flex"] {
+  animation: fadeInScale 0.2s ease-out;
+}
+
+@keyframes fadeInScale {
+  from {
+    opacity: 0;
+    transform: scale(0.8);
+  }
+  to {
+    opacity: 1;
+    transform: scale(1);
+  }
+}
+
+/* Ensure the overlay doesn't interfere with page scrolling */
+.uidevkit-color-picker-overlay:not([style*="block"]) {
+  pointer-events: none;
+}

@@ -3,20 +3,23 @@
   "name": "UI DEV Kit",
   "version": "1.0.0",
   "description": "Bundle of UI Design Tools",
-  "permissions": ["activeTab", "scripting"],
+  "permissions": ["activeTab", "scripting", "storage", "tabs"],
   "action": {
     "default_popup": "popup.html",
     "default_title": "UI DEV Kit"
+  },
+  "background": {
+    "service_worker": "background.js"
   },
   "content_scripts": [
     {
       "matches": ["<all_urls>"],
       "js": [
         "lib/browser-polyfill.min.js",
-        "lib/culori.umd.js",
-        "content/ruler_content.js"
+        "content/ruler_content.js",
+        "content/eyedrop_content.js"
       ],
-      "css": ["content/ruler_content.css"],
+      "css": ["content/ruler_content.css", "content/eyedrop_content.css"],
       "run_at": "document_idle"
     }
   ],
@@ -28,7 +31,7 @@
   },
   "web_accessible_resources": [
     {
-      "resources": ["content/ruler_content.css"],
+      "resources": ["content/ruler_content.css", "content/eyedrop_content.css"],
       "matches": ["<all_urls>"]
     }
   ]
