@@ -144,12 +144,12 @@
               />
             </div>
             <div class="color-converter-group">
-              <label for="colorInputRgba">RGBA:</label>
+              <label for="colorInputRgb">RGB:</label>
               <input
                 type="text"
-                id="colorInputRgba"
+                id="colorInputRgb"
                 class="color-converter-input"
-                placeholder="rgba(R, G, B, A)"
+                placeholder="rgb(R, G, B)"
               />
             </div>
             <div class="color-converter-group">
@@ -161,12 +161,22 @@
                 placeholder="oklch(L C H)"
               />
             </div>
+            <div class="color-converter-group">
+              <label for="colorInputHsl">HSL:</label>
+              <input
+                type="text"
+                id="colorInputHsl"
+                class="color-converter-input"
+                placeholder="hsl(H, S%, L%)"
+              />
+            </div>
           </div>
         </div>
       </div>
     </div>
 
     <script src="lib/browser-polyfill.min.js"></script>
+    <script src="lib/color.global.min.js"></script>
     <script src="popup.js"></script>
   </body>
 </html>

@@ -21,8 +21,9 @@ class UIDevKitPopup {
 
     // Color Converter elements
     this.colorInputHex = document.getElementById("colorInputHex");
-    this.colorInputRgba = document.getElementById("colorInputRgba");
+    this.colorInputRgb = document.getElementById("colorInputRgb");
     this.colorInputOklch = document.getElementById("colorInputOklch");
+    this.colorInputHsl = document.getElementById("colorInputHsl");
 
     this.init();
   }
@@ -46,11 +47,14 @@ class UIDevKitPopup {
     this.colorInputHex.addEventListener("input", () =>
       this.convertColor("hex")
     );
-    this.colorInputRgba.addEventListener("input", () =>
-      this.convertColor("rgba")
+    this.colorInputRgb.addEventListener("input", () =>
+      this.convertColor("rgb")
     );
     this.colorInputOklch.addEventListener("input", () =>
       this.convertColor("oklch")
+    );
+    this.colorInputHsl.addEventListener("input", () =>
+      this.convertColor("hsl")
     );
 
     // Listen for messages from content scripts (only for pickedColor now)
@@ -333,134 +337,79 @@ class UIDevKitPopup {
 
   convertColor(fromFormat) {
     let hex = "";
-    let rgba = "";
+    let rgb = "";
+    let hsl = "";
     let oklch = "";
 
     try {
+      let color;
+
       if (fromFormat === "hex") {
         hex = this.colorInputHex.value.trim();
         if (!hex) {
-          this.colorInputRgba.value = "";
-          this.colorInputOklch.value = "";
+          this.clearColorOutputs(fromFormat);
           return;
         }
-        const rgbaArray = this.hexToRgbaArray(hex);
-        rgba = rgbaArray ? `rgba(${rgbaArray.join(", ")})` : "";
-        oklch = rgbaArray ? this.rgbaToOklch(rgbaArray) : "";
-      } else if (fromFormat === "rgba") {
-        rgba = this.colorInputRgba.value.trim();
-        if (!rgba) {
-          this.colorInputHex.value = "";
-          this.colorInputOklch.value = "";
+        color = new Color(hex);
+      } else if (fromFormat === "rgb") {
+        rgb = this.colorInputRgb.value.trim();
+        if (!rgb) {
+          this.clearColorOutputs(fromFormat);
           return;
         }
-        const rgbaArray = this.parseRgba(rgba);
-        hex = rgbaArray ? this.rgbaArrayToHex(rgbaArray) : "";
-        oklch = rgbaArray ? this.rgbaToOklch(rgbaArray) : "";
+        color = new Color(rgb);
+      } else if (fromFormat === "hsl") {
+        hsl = this.colorInputHsl.value.trim();
+        if (!hsl) {
+          this.clearColorOutputs(fromFormat);
+          return;
+        }
+        color = new Color(hsl);
       } else if (fromFormat === "oklch") {
         oklch = this.colorInputOklch.value.trim();
         if (!oklch) {
-          this.colorInputHex.value = "";
-          this.colorInputRgba.value = "";
+          this.clearColorOutputs(fromFormat);
           return;
         }
-        const rgbaArray = this.oklchToRgba(oklch);
-        hex = rgbaArray ? this.rgbaArrayToHex(rgbaArray) : "";
-        rgba = rgbaArray ? `rgba(${rgbaArray.join(", ")})` : "";
+        color = new Color(oklch);
+      }
+
+      if (!color) {
+        this.clearColorOutputs(fromFormat);
+        return;
+      }
+
+      // Convert to all formats using Color.js built-in methods
+      if (fromFormat !== "hex") {
+        hex = color.toString({ format: "hex" });
+      }
+      if (fromFormat !== "rgb") {
+        rgb = color.toString({ format: "rgb" });
+      }
+      if (fromFormat !== "hsl") {
+        hsl = color.toString({ format: "hsl" });
+      }
+      if (fromFormat !== "oklch") {
+        oklch = color.toString({ format: "oklch" });
       }
     } catch (e) {
       console.error("Color conversion error:", e);
-      // Clear outputs on error
-      if (fromFormat !== "hex") this.colorInputHex.value = "";
-      if (fromFormat !== "rgba") this.colorInputRgba.value = "";
-      if (fromFormat !== "oklch") this.colorInputOklch.value = "";
+      this.clearColorOutputs(fromFormat);
       return;
     }
 
+    // Update the UI
     if (fromFormat !== "hex") this.colorInputHex.value = hex;
-    if (fromFormat !== "rgba") this.colorInputRgba.value = rgba;
+    if (fromFormat !== "rgb") this.colorInputRgb.value = rgb;
+    if (fromFormat !== "hsl") this.colorInputHsl.value = hsl;
     if (fromFormat !== "oklch") this.colorInputOklch.value = oklch;
   }
 
-  // Helper functions for color conversion
-  hexToRgbaArray(hex) {
-    let c;
-    if (/^#([A-Fa-f0-9]{3}){1,2}$/.test(hex)) {
-      c = hex.substring(1).split("");
-      if (c.length === 3) {
-        c = [c[0], c[0], c[1], c[1], c[2], c[2]];
-      }
-      c = "0x" + c.join("");
-      // Ensure alpha is 1 if not explicitly present in hex (e.g., #RRGGBB vs #RRGGBBAA)
-      return [(c >> 16) & 255, (c >> 8) & 255, c & 255, 1];
-    }
-    return null;
-  }
-
-  rgbaArrayToHex(rgbaArray) {
-    if (!rgbaArray || rgbaArray.length < 3) return "";
-    const toHex = (c) => {
-      const hex = Math.round(c).toString(16);
-      return hex.length === 1 ? "0" + hex : hex;
-    };
-    const alphaHex =
-      rgbaArray[3] !== undefined && rgbaArray[3] < 1
-        ? toHex(rgbaArray[3] * 255)
-        : "";
-    return `#${toHex(rgbaArray[0])}${toHex(rgbaArray[1])}${toHex(
-      rgbaArray[2]
-    )}${alphaHex}`;
-  }
-
-  parseRgba(rgbaString) {
-    const match = rgbaString.match(
-      /rgba?\((\d+),\s*(\d+),\s*(\d+)(?:,\s*(\d*\.?\d+))?\)/
-    );
-    if (match) {
-      return [
-        parseInt(match[1]),
-        parseInt(match[2]),
-        parseInt(match[3]),
-        match[4] ? parseFloat(match[4]) : 1,
-      ];
-    }
-    return null;
-  }
-
-  // Simplified OKLCH conversion (requires a more robust library for accurate conversion)
-  rgbaToOklch(rgbaArray) {
-    if (!rgbaArray) return "";
-    const r = rgbaArray[0] / 255;
-    const g = rgbaArray[1] / 255;
-    const b = rgbaArray[2] / 255;
-
-    const L = (0.2126 * r + 0.7152 * g + 0.0722 * b) * 100;
-    const C = Math.sqrt((r - 0.5) ** 2 + (g - 0.5) ** 2 + (b - 0.5) ** 2) * 100;
-    const H = Math.atan2(g - 0.5, r - 0.5) * (180 / Math.PI);
-    return `oklch(${L.toFixed(2)}% ${C.toFixed(2)} ${H.toFixed(2)})`;
-  }
-
-  oklchToRgba(oklchString) {
-    const match = oklchString.match(
-      /oklch\((\d*\.?\d+)%\s*(\d*\.?\d+)\s*(\d*\.?\d+)\)/
-    );
-    if (match) {
-      const L = parseFloat(match[1]) / 100;
-      const C = parseFloat(match[2]) / 100;
-      const H = parseFloat(match[3]) * (Math.PI / 180);
-
-      const r = L + C * Math.cos(H);
-      const g = L + C * Math.sin(H);
-      const b = L - C * Math.cos(H) - C * Math.sin(H);
-
-      return [
-        Math.round(Math.max(0, Math.min(255, r * 255))),
-        Math.round(Math.max(0, Math.min(255, g * 255))),
-        Math.round(Math.max(0, Math.min(255, b * 255))),
-        1,
-      ];
-    }
-    return null;
+  clearColorOutputs(exceptFormat) {
+    if (exceptFormat !== "hex") this.colorInputHex.value = "";
+    if (exceptFormat !== "rgb") this.colorInputRgb.value = "";
+    if (exceptFormat !== "hsl") this.colorInputHsl.value = "";
+    if (exceptFormat !== "oklch") this.colorInputOklch.value = "";
   }
 
   updateStatus(message) {

@@ -31,7 +31,11 @@
   },
   "web_accessible_resources": [
     {
-      "resources": ["content/ruler_content.css", "content/eyedrop_content.css"],
+      "resources": [
+        "content/ruler_content.css",
+        "content/eyedrop_content.css",
+        "lib/color.global.min.js"
+      ],
       "matches": ["<all_urls>"]
     }
   ]
