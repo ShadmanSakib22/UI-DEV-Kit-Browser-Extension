@@ -14,6 +14,7 @@ body {
 
 .container {
   padding: 20px;
+  padding-bottom: 40px;
 }
 
 .header {
@@ -92,22 +93,55 @@ body {
   border-color: #dc2626;
 }
 
+.btn-lg {
+  width: 50%;
+  margin-bottom: 8px;
+  padding: 8px 12px;
+  border: 1px solid #d1d5db;
+  border-radius: 6px;
+  font-size: 14px;
+  font-family: inherit;
+  background: #f9fafb;
+  color: #374151;
+  font-weight: 500;
+}
+.btn-lg:hover {
+  opacity: 70%;
+}
+
+.btn-sm {
+  width: 50%;
+  padding: 6px 10px;
+  border: 1px solid #d1d5db;
+  border-radius: 6px;
+  font-size: 12px;
+  font-family: inherit;
+  background: #f9fafb;
+  color: #374151;
+  font-weight: 500;
+  text-align: center;
+  cursor: pointer;
+}
+.btn-sm:hover {
+  opacity: 70%;
+}
+
 .icon {
   font-size: 16px;
 }
 
 .status {
-  margin-top: 10px;
+  position: fixed;
+  bottom: 0;
+  z-index: 9999;
+  width: 320px;
   padding: 6px 12px;
-  background: #f0f9ff;
-  border: 1px solid #bae6fd;
-  border-radius: 8px;
-  text-align: center;
+  background: #0f172a;
 }
 
 .status-text {
   font-size: 14px;
-  color: #0369a1;
+  color: white;
   font-weight: 500;
 }
 
@@ -308,4 +342,60 @@ body {
   background: #f9fafb;
   color: #374151;
   font-weight: 500;
+}
+
+.quick-links li {
+  list-style: none;
+  background-color: #d6d6dd90;
+  border-radius: 4px;
+  padding: 4px 8px;
+  margin-bottom: 8px;
+  cursor: pointer;
+  font-size: 14px;
+  font-weight: 500;
+}
+.quick-links li a {
+  color: #6b7280;
+  text-decoration: none;
+}
+.quick-links li a i {
+  font-size: 12px;
+}
+.quick-links li:hover {
+  background-color: #d6d6dd60;
+}
+.add-link-form .form-group {
+  display: flex;
+  flex-direction: row;
+  gap: 8px;
+  margin-bottom: 6px;
+  align-items: center;
+}
+.add-link-form label {
+  font-size: 12px;
+  font-weight: 500;
+  color: #374151;
+}
+.add-link-form input {
+  flex: 1;
+  padding: 6px 8px;
+  border: 1px solid #d1d5db;
+  border-radius: 6px;
+  font-size: 12px;
+  background: #f9fafb;
+  color: #374151;
+  font-weight: 400;
+}
+.form-buttons {
+  display: flex;
+  flex-direction: row;
+  gap: 8px;
+}
+
+.remove-link-btn {
+  background: #f9fafb;
+  border: 1.6px solid #374151;
+  border-radius: 4px;
+  cursor: pointer;
+  font-size: 10px;
 }

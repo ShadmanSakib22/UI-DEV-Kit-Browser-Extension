@@ -25,6 +25,16 @@ class UIDevKitPopup {
     this.colorInputOklch = document.getElementById("colorInputOklch");
     this.colorInputHsl = document.getElementById("colorInputHsl");
 
+    // Quick Links
+    this.quickLinks = document.querySelector(".quick-links");
+    this.addLinkBtn = document.getElementById("addLinkBtn");
+    this.addLinkForm = document.getElementById("addLinkForm");
+    this.newLinkName = document.getElementById("linkName");
+    this.newLinkUrl = document.getElementById("linkUrl");
+    this.newLinkDesc = document.getElementById("linkDesc");
+    this.saveLinkBtn = document.getElementById("saveLinkBtn");
+    this.cancelLinkBtn = document.getElementById("cancelLinkBtn");
+
     this.init();
   }
 
@@ -69,6 +79,18 @@ class UIDevKitPopup {
 
     // Initial unit conversion
     this.convertUnits();
+
+    // Initialize Quick Links
+    this.populateQuickLinks();
+    this.addLinkBtn.addEventListener("click", () => this.addQuickLink());
+    this.saveLinkBtn.addEventListener("click", () => this.handleNewLink());
+    this.cancelLinkBtn.addEventListener("click", () => this.hideAddLinkForm());
+  }
+
+  resetStatus() {
+    setTimeout(() => {
+      this.updateStatus("Ready");
+    }, 3000);
   }
 
   convertUnits() {
@@ -247,9 +269,7 @@ class UIDevKitPopup {
       });
       await browser.tabs.sendMessage(tab.id, { action: "clearMeasurements" });
       this.updateStatus("All measurements cleared");
-      setTimeout(() => {
-        this.updateStatus("Ready");
-      }, 3000);
+      this.resetStatus();
     } catch (error) {
       console.error("Error clearing measurements:", error);
     }
@@ -302,11 +322,10 @@ class UIDevKitPopup {
 
       // Update status to show color was picked
       this.updateStatus(`Color picked: ${message.color.hex}`);
-      setTimeout(() => {
-        this.updateStatus("Ready");
-      }, 3000);
+      this.resetStatus();
     } else if (message.action === "updateStatus") {
       this.updateStatus(message.message);
+      this.resetStatus();
     }
   }
 
@@ -410,6 +429,139 @@ class UIDevKitPopup {
     if (exceptFormat !== "rgb") this.colorInputRgb.value = "";
     if (exceptFormat !== "hsl") this.colorInputHsl.value = "";
     if (exceptFormat !== "oklch") this.colorInputOklch.value = "";
+  }
+
+  // loads user links from storage
+  async loadUserLinks() {
+    try {
+      const result = await browser.storage.local.get(["userQuickLinks"]);
+      return result.userQuickLinks || [];
+    } catch (error) {
+      console.error("Error loading user links:", error);
+      return [];
+    }
+  }
+
+  // Save user links to storage
+  async saveUserLinks(userLinks) {
+    try {
+      await browser.storage.local.set({ userQuickLinks: userLinks });
+    } catch (error) {
+      console.error("Error saving user links:", error);
+    }
+  }
+
+  // Function to populate QuickLinks
+  async populateQuickLinks() {
+    const defaultLinks = [
+      {
+        name: "MDN Web Docs",
+        url: "https://developer.mozilla.org/en-US/",
+        desc: "Documentation",
+        isDefault: true,
+      },
+      {
+        name: "Unused CSS",
+        url: "https://unused-css.com/",
+        desc: "Various CSS utilities",
+        isDefault: true,
+      },
+      {
+        name: "Minifier",
+        url: "https://www.minifier.org/",
+        desc: "Minify CSS, JS",
+        isDefault: true,
+      },
+    ];
+
+    // Load user defined links from storage
+    const userLinks = await this.loadUserLinks();
+
+    const allLinks = [...defaultLinks, ...userLinks];
+
+    // Clear existing content to prevent duplication on re-population
+    this.quickLinks.innerHTML = "";
+
+    allLinks.forEach((link, index) => {
+      // Only user-added links should be removable
+      const removeButtonHtml = link.isDefault
+        ? ""
+        : `<button class="remove-link-btn" data-index="${index}">➖</button>`;
+
+      this.quickLinks.innerHTML += `
+        <li data-url="${link.url}">
+        ${removeButtonHtml}
+          <a href="${link.url}" target="_blank"
+            ><b>${link.name} </b> [<i>${link.desc}</i>]
+          </a>          
+        </li>
+      `;
+    });
+
+    // Attach event listeners to newly created remove buttons
+    this.quickLinks.querySelectorAll(".remove-link-btn").forEach((button) => {
+      button.addEventListener("click", (event) =>
+        this.handleRemoveLinkClick(event)
+      );
+    });
+  }
+
+  // Handle click on remove link button
+  async handleRemoveLinkClick(event) {
+    const listItem = event.target.closest("li");
+    if (!listItem) return;
+
+    const urlToRemove = listItem.dataset.url; // Get URL from data attribute
+
+    let userLinks = await this.loadUserLinks();
+    // Filter out the link to be removed based on its URL
+    userLinks = userLinks.filter((link) => link.url !== urlToRemove);
+
+    await this.saveUserLinks(userLinks); // Save the updated list
+    await this.populateQuickLinks(); // Re-populate the UI
+    this.updateStatus("Link removed successfully!");
+    this.resetStatus();
+  }
+
+  addQuickLink() {
+    this.addLinkForm.style.display = "block";
+  }
+  hideAddLinkForm() {
+    this.addLinkForm.style.display = "none";
+  }
+  clearLinkForm() {
+    this.newLinkName.value = "";
+    this.newLinkUrl.value = "";
+    this.newLinkDesc.value = "";
+  }
+
+  // Function to handle user input for new link
+  async handleNewLink() {
+    const name = this.newLinkName.value.trim();
+    const url = this.newLinkUrl.value.trim();
+    const desc = this.newLinkDesc.value.trim();
+
+    if (!name || !url) {
+      this.updateStatus("Please provide both name and URL for the link.");
+      this.resetStatus();
+      return;
+    }
+
+    let userLinks = await this.loadUserLinks();
+    if (userLinks.some((link) => link.url === url)) {
+      this.updateStatus("This link already exists!");
+      this.resetStatus();
+      return;
+    }
+
+    await this.saveUserLinks([...userLinks, { name, url, desc }]);
+
+    // Clear form and refresh display
+    this.clearLinkForm();
+    this.hideAddLinkForm();
+    await this.populateQuickLinks();
+    this.updateStatus("Link added successfully!");
+    this.resetStatus();
   }
 
   updateStatus(message) {

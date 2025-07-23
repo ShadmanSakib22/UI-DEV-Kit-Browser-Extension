@@ -11,10 +11,6 @@
       <div class="header">
         <h1>UI DEV Kit</h1>
         <p>Bundle of UI Design Tools</p>
-        <!--Status-->
-        <div class="status" id="status">
-          <span class="status-text">Ready</span>
-        </div>
       </div>
 
       <div class="tools">
@@ -173,6 +169,39 @@
           </div>
         </div>
       </div>
+      <!--Quick Links-->
+      <div class="tool-section">
+        <h3>Quick Links</h3>
+        <button id="addLinkBtn" class="btn-lg">Add Link 🔖</button>
+        <ul class="quick-links">
+          <!-- Links will be populated here by JavaScript -->
+        </ul>
+
+        <!-- Add Link Form (initially hidden) -->
+        <div id="addLinkForm" class="add-link-form" style="display: none">
+          <div class="form-group">
+            <label for="linkName">Name:</label>
+            <input type="text" id="linkName" placeholder="Link name" />
+          </div>
+          <div class="form-group">
+            <label for="linkUrl">URL:</label>
+            <input type="url" id="linkUrl" placeholder="https://example.com" />
+          </div>
+          <div class="form-group">
+            <label for="linkDesc">Description:</label>
+            <input type="text" id="linkDesc" placeholder="Brief description" />
+          </div>
+          <div class="form-buttons">
+            <button id="saveLinkBtn" class="btn-sm">Save</button>
+            <button id="cancelLinkBtn" class="btn-sm">Cancel</button>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!--Status-->
+    <div class="status" id="status">
+      <span class="status-text">Ready</span>
     </div>
 
     <script src="lib/browser-polyfill.min.js"></script>
